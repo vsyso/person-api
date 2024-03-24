@@ -1,7 +1,5 @@
 # Person API v1
 
-
-
 Main features:
 
 * Spring Boot REST API with standard CRUD operations
