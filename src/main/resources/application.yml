@@ -2,12 +2,11 @@ spring:
   application:
     name: person-api
   h2:
-    console.enabled: true
+    console.enabled: false
   datasource:
-    url: jdbc:h2:mem:persons-db;DB_CLOSE_DELAY=-1
-    #url: jdbc:h2:file:/data/demo
+    url: jdbc:h2:mem:persons-db
     username: admin
-    password: pwd
+    password: admin
     driverClassName: org.h2.Driver
   jpa:
     defer-datasource-initialization: true

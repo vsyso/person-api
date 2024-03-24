@@ -1,6 +1,7 @@
 package ua.dp.syso.person.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -18,6 +19,7 @@ import ua.dp.syso.person.config.TestConfiguration
 import ua.dp.syso.person.repository.PersonRepository
 import ua.dp.syso.person.security.UserRoles
 import ua.dp.syso.person.utils.TestUtils
+import ua.dp.syso.person.utils.TestUtils.Companion.toModel
 import ua.dp.syso.person.utils.TestUtils.Companion.toModelWithId
 import java.time.format.DateTimeFormatter
 
@@ -30,6 +32,11 @@ class PersonControllerTest @Autowired constructor(
 ) {
 
     val baseUrl = "/api/v1"
+
+    @BeforeEach
+    fun beforeEach() {
+        personRepository.deleteAll()
+    }
 
     @Test
     @WithMockUser(roles = [UserRoles.ADMIN_ROLE])
@@ -93,18 +100,20 @@ class PersonControllerTest @Autowired constructor(
         // Add a person
         val personDto = TestUtils.createTestPersonDto("Test", "Person")
 
-        mockMvc
+        val result = mockMvc
             .post("$baseUrl/persons") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(personDto)
             }.andExpect {
                 status { isCreated() }
-                redirectedUrl("http://localhost$baseUrl/persons/1")
-            }
+                redirectedUrlPattern("http://localhost$baseUrl/persons/*")
+            }.andReturn()
 
-        val person = personDto.toModelWithId(1)
+        val url = result.response.redirectedUrl!!
+        val id = url.substring(url.lastIndexOf('/') + 1).toLong()
+        val person = personDto.toModelWithId(id)
         // Verify
-        mockMvc.get("$baseUrl/persons/1")
+        mockMvc.get(url)
             .andExpect {
                 status { isOk() }
                 content {
@@ -120,16 +129,12 @@ class PersonControllerTest @Autowired constructor(
 
         // Add initial person
         val personDto = TestUtils.createTestPersonDto("John", "Doe", 20)
-        mockMvc
-            .post("$baseUrl/persons") {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(personDto)
-            }
+        val id = personRepository.save(personDto.toModel()).id
 
         // Update the person
         val updatePersonDto = TestUtils.createTestPersonDto("Johnny", "Doer", 21)
         mockMvc
-            .put("$baseUrl/persons/1") {
+            .put("$baseUrl/persons/$id") {
                 contentType = MediaType.APPLICATION_JSON
                 content = objectMapper.writeValueAsString(updatePersonDto)
             }.andExpect {
@@ -137,8 +142,8 @@ class PersonControllerTest @Autowired constructor(
             }
 
         // Verify
-        val updatedPerson = updatePersonDto.toModelWithId(1)
-        mockMvc.get("$baseUrl/persons/1")
+        val updatedPerson = updatePersonDto.toModelWithId(id)
+        mockMvc.get("$baseUrl/persons/$id")
             .andExpect {
                 status { isOk() }
                 content {
@@ -154,16 +159,12 @@ class PersonControllerTest @Autowired constructor(
 
         // Add a person
         val personDto = TestUtils.createTestPersonDto("Test", "Person")
+        val id = personRepository.save(personDto.toModel()).id!!
 
-        mockMvc
-            .post(baseUrl) {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(personDto)
-            }
 
-        val person = personDto.toModelWithId(1)
+        val person = personDto.toModelWithId(id)
         // Verify
-        mockMvc.get("$baseUrl/persons/1")
+        mockMvc.get("$baseUrl/persons/$id")
             .andExpect {
                 status { isOk() }
                 content {
@@ -172,7 +173,8 @@ class PersonControllerTest @Autowired constructor(
                 }
             }
 
-        mockMvc.get("$baseUrl/persons/2")
+        val nextId = id + 1
+        mockMvc.get("$baseUrl/persons/$nextId")
             .andExpect {
                 status { isNotFound() }
             }
@@ -184,25 +186,21 @@ class PersonControllerTest @Autowired constructor(
 
         // Add a person
         val personDto = TestUtils.createTestPersonDto("Test", "Person")
+        val id = personRepository.save(personDto.toModel()).id
 
-        mockMvc
-            .post(baseUrl) {
-                contentType = MediaType.APPLICATION_JSON
-                content = objectMapper.writeValueAsString(personDto)
-            }
 
-        mockMvc.get("$baseUrl/persons/1")
+        mockMvc.get("$baseUrl/persons/$id")
             .andExpect {
                 status { isOk() }
             }
 
         // Verify
-        mockMvc.delete("$baseUrl/persons/1")
+        mockMvc.delete("$baseUrl/persons/$id")
             .andExpect {
                 status { isNoContent() }
             }
 
-        mockMvc.get("$baseUrl/persons/1")
+        mockMvc.get("$baseUrl/persons/$id")
             .andExpect {
                 status { isNotFound() }
             }
@@ -215,7 +213,7 @@ class PersonControllerTest @Autowired constructor(
 
         // Add initial person
         for (i in 1..3) {
-            val person = TestUtils.createTestPersonDto("Name_$i", "Test", 24).toModelWithId(i.toLong())
+            val person = TestUtils.createTestPersonDto("Name_$i", "Test").toModelWithId(i.toLong())
             personRepository.save(person)
         }
 
@@ -223,9 +221,9 @@ class PersonControllerTest @Autowired constructor(
         mockMvc.perform(MockMvcRequestBuilders.get("$baseUrl/list").with(user("test").roles(userRole)))
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("content[0].id").value("1" ))
-            .andExpect(jsonPath("content[1].id").value("2" ))
-            .andExpect(jsonPath("content[2].id").value("3" ))
+            .andExpect(jsonPath("content[0].name").value("Name_1" ))
+            .andExpect(jsonPath("content[1].name").value("Name_2" ))
+            .andExpect(jsonPath("content[2].name").value("Name_3" ))
 
             .andExpect(jsonPath("page.size").value( 20 ))
             .andExpect(jsonPath("page.number").value( 0 ))
