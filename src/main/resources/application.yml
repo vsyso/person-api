@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: person-api
+  h2:
+    console.enabled: true
+  datasource:
+    url: jdbc:h2:mem:persons-db;DB_CLOSE_DELAY=-1
+    #url: jdbc:h2:file:/data/demo
+    username: admin
+    password: pwd
+    driverClassName: org.h2.Driver
+  jpa:
+    defer-datasource-initialization: true
+    open-in-view: false
+server:
+  error:
+    include-stacktrace: never
+springdoc:
+  swagger-ui:
+    default-model-expand-depth: -1
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,total-persons
+config:
+  api:
+    users:
+    - name: admin
+      password: '$2y$10$rYTaz..pgoB1kilOcHMRZeZJshZeW39ZRYaAu3SAdiskg82q8cev2'
+      roles:
+        - ADMIN
+        - USER
+    - name: guest
+      password: '$2y$10$7TooBEkZ9eknk1fuLQY8eeu7NmWHMS.gsrqlUSzabeINPzj/p2yHy'
+      roles:
+        - USER
+

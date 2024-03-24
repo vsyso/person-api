@@ -1,0 +1,6 @@
+spring:
+  sql:
+    init:
+      mode: never
+  main:
+    allow-bean-definition-overriding: true
