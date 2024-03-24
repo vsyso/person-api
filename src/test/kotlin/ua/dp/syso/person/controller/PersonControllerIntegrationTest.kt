@@ -19,19 +19,18 @@ import ua.dp.syso.person.config.TestConfiguration
 import ua.dp.syso.person.repository.PersonRepository
 import ua.dp.syso.person.security.UserRoles
 import ua.dp.syso.person.utils.TestUtils
+import ua.dp.syso.person.utils.TestUtils.Companion.baseUrl
 import ua.dp.syso.person.utils.TestUtils.Companion.toModel
 import ua.dp.syso.person.utils.TestUtils.Companion.toModelWithId
 import java.time.format.DateTimeFormatter
 
 @SpringBootTest(classes = [TestConfiguration::class])
 @AutoConfigureMockMvc
-class PersonControllerTest @Autowired constructor(
+class PersonControllerIntegrationTest @Autowired constructor(
     val personRepository: PersonRepository,
     val mockMvc: MockMvc,
     val objectMapper: ObjectMapper
 ) {
-
-    val baseUrl = "/api/v1"
 
     @BeforeEach
     fun beforeEach() {
@@ -211,7 +210,7 @@ class PersonControllerTest @Autowired constructor(
     @ValueSource(strings = [UserRoles.ADMIN_ROLE, UserRoles.USER_ROLE])
     fun `SHOULD list persons for specific roles WHEN get request to list endpoint sent`(userRole: String) {
 
-        // Add initial person
+        // Add initial persons
         for (i in 1..3) {
             val person = TestUtils.createTestPersonDto("Name_$i", "Test").toModelWithId(i.toLong())
             personRepository.save(person)

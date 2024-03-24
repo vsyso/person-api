@@ -10,6 +10,8 @@ class TestUtils {
 
     companion object {
 
+        val baseUrl = "/api/v1"
+
         fun PersonDto.toModel(): Person {
             return this.toModelWithId(null)
         }
@@ -27,17 +29,24 @@ class TestUtils {
             )
         }
 
-        fun createTestPersonDto(name: String, surname: String, age: Short? = null, phone: String? = null): PersonDto {
+        fun createTestPersonDto(name: String,
+                                surname: String,
+                                age: Short? = null,
+                                phone: String? = null,
+                                email: String? = null,
+                                dob: LocalDate? = null,
+                                username: String? = null,
+                                password: String? = null): PersonDto {
             val years = age ?: Random.nextInt(18,99)
-            val username = "${name.lowercase()}.${surname.lowercase()}"
+            val user = "${name.lowercase()}.${surname.lowercase()}"
             return PersonDto(
                 name,
                 surname,
-                "$username@example.com",
+                email ?: "$user@example.com",
                 phone ?: String.format("+12345%06d", Random.nextInt(999999)),
-                LocalDate.now().minusYears(years.toLong()),
-                username,
-                UUID.randomUUID().toString()
+                dob ?: LocalDate.now().minusYears(years.toLong()),
+                username ?: user,
+                password ?: UUID.randomUUID().toString()
             )
         }
     }

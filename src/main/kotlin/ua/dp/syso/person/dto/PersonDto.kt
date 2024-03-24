@@ -18,7 +18,7 @@ data class PersonDto(
     @field:Size(min = 3, max = 64)
     val surname: String,
     @field:Email
-    @Size(min = 5, max = 320)
+    @field:Size(min = 5, max = 320)
     val email: String,
     @field:NotBlank
     @Size(min = 3, max = 32)
