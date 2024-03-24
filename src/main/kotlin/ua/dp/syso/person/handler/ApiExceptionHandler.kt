@@ -1,5 +1,7 @@
 package ua.dp.syso.person.handler
 
+import org.springframework.core.Ordered
+import org.springframework.core.annotation.Order
 import org.springframework.data.mapping.PropertyReferenceException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -15,6 +17,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException
 /**
  * Handles API exceptions
  */
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 class ApiExceptionHandler: ResponseEntityExceptionHandler() {
 
@@ -38,8 +41,8 @@ class ApiExceptionHandler: ResponseEntityExceptionHandler() {
         request: WebRequest
     ): ResponseEntity<Any>? {
         val apiError = ApiError(
-            status = HttpStatus.NOT_FOUND,
-            message = "No handler found",
+            status = HttpStatus.METHOD_NOT_ALLOWED,
+            message = "Method not allowed",
             errors = listOf("Method ${ex.httpMethod} is not supported"))
         return ResponseEntity(apiError, apiError.status)
     }
@@ -57,7 +60,6 @@ class ApiExceptionHandler: ResponseEntityExceptionHandler() {
                 status = HttpStatus.INTERNAL_SERVER_ERROR,
                 message = "An error occurred",
                 errors = listOf("The error has been reported"))
-            // log ex.localizedMessage
         }
 
         return ResponseEntity(apiError, apiError.status)

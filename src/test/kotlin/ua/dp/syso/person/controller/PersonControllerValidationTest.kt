@@ -1,25 +1,20 @@
 package ua.dp.syso.person.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.web.servlet.*
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import ua.dp.syso.person.config.TestConfiguration
-import ua.dp.syso.person.handler.ApiError
 import ua.dp.syso.person.repository.PersonRepository
 import ua.dp.syso.person.security.UserRoles
 import ua.dp.syso.person.utils.TestUtils
 import ua.dp.syso.person.utils.TestUtils.Companion.baseUrl
-import ua.dp.syso.person.utils.TestUtils.Companion.toModelWithId
 import java.time.LocalDate
 
 @SpringBootTest(classes = [TestConfiguration::class])
@@ -42,7 +37,7 @@ class PersonControllerValidationTest @Autowired constructor(
             }.andExpect {
                 status { isBadRequest() }
                 content {
-                    contentType(MediaType.APPLICATION_JSON)
+                    contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 }
             }
     }
@@ -60,7 +55,7 @@ class PersonControllerValidationTest @Autowired constructor(
             }.andExpect {
                 status { isBadRequest() }
                 content {
-                    contentType(MediaType.APPLICATION_JSON)
+                    contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 }
             }
     }
@@ -78,7 +73,7 @@ class PersonControllerValidationTest @Autowired constructor(
             }.andExpect {
                 status { isBadRequest() }
                 content {
-                    contentType(MediaType.APPLICATION_JSON)
+                    contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 }
             }
     }
@@ -96,7 +91,7 @@ class PersonControllerValidationTest @Autowired constructor(
             }.andExpect {
                 status { isBadRequest() }
                 content {
-                    contentType(MediaType.APPLICATION_JSON)
+                    contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 }
             }
     }
@@ -115,7 +110,7 @@ class PersonControllerValidationTest @Autowired constructor(
             }.andExpect {
                 status { isBadRequest() }
                 content {
-                    contentType(MediaType.APPLICATION_JSON)
+                    contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 }
             }
     }
@@ -133,7 +128,7 @@ class PersonControllerValidationTest @Autowired constructor(
             }.andExpect {
                 status { isBadRequest() }
                 content {
-                    contentType(MediaType.APPLICATION_JSON)
+                    contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 }
             }
     }
@@ -151,7 +146,7 @@ class PersonControllerValidationTest @Autowired constructor(
             }.andExpect {
                 status { isBadRequest() }
                 content {
-                    contentType(MediaType.APPLICATION_JSON)
+                    contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 }
             }
     }

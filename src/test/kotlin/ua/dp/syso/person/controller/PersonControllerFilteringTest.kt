@@ -76,6 +76,4 @@ class PersonControllerFilteringTest @Autowired constructor(
             .andExpect(jsonPath("content[0].name").value(name ))
             .andExpect(jsonPath("page.totalElements").value(1 ))
     }
-
-
 }
